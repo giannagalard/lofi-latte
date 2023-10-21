@@ -2,6 +2,11 @@
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged
+} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,4 +21,40 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export default app;
+const auth = getAuth(app);
+
+export const returnIsAuth = (a, navigate) => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            a(true);
+            navigate("/profile");
+        } else {
+            a(false);
+            navigate("/giannagalard");
+        }
+    });
+}
+
+export const authenticate = (e, a, inputs, navigate) => {
+    signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+        // eslint-disable-next-line
+        .then((userCredential) => {
+            e({});
+            a(true);
+            navigate("/profile");
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            a(false);
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            e({
+                errorCode: errorCode,
+                errorMessage: errorMessage,
+            });
+        });
+};
+
+export async function signOut() {
+    await auth.signOut();
+}
