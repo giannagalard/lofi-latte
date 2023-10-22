@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import { Link } from "react-router-dom";
 import { Avatar, Button } from "@mui/material";
 import logo from "../Assets/logo.png";
-import { signOut } from "../firebase/Firebase";
+import { signOut, returnIsAuth } from "../firebase/Firebase";
 
 export default function Navbar() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    returnIsAuth(setIsAuthenticated);
+  }, []);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar sx={{ background: "#FFDAE1" }} position="static">
@@ -30,9 +36,11 @@ export default function Navbar() {
             />
           </Box>
           <Box>
-            <Button variant="contained" onClick={signOut}>
-              Sign Out
-            </Button>
+            {isAuthenticated && (
+              <Button variant="contained" onClick={signOut}>
+                Sign Out
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </AppBar>

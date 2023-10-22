@@ -5,6 +5,7 @@ import { initializeApp } from "firebase/app";
 import {
     getAuth,
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     onAuthStateChanged
 } from "firebase/auth";
 
@@ -23,20 +24,38 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
-export const returnIsAuth = (a, navigate) => {
+export const returnIsAuth = (setIsAuthenticated) => {
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            a(true);
-            navigate("/profile");
+            setIsAuthenticated(true);
         } else {
-            a(false);
-            navigate("/giannagalard");
+            setIsAuthenticated(false);
         }
     });
-}
+};
 
 export const authenticate = (e, a, inputs, navigate) => {
     signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+        // eslint-disable-next-line
+        .then((userCredential) => {
+            e({});
+            a(true);
+            navigate("/profile");
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            a(false);
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            e({
+                errorCode: errorCode,
+                errorMessage: errorMessage,
+            });
+        });
+};
+
+export const signup = (e, a, inputs, navigate) => {
+    createUserWithEmailAndPassword(auth, inputs.email, inputs.password)
         // eslint-disable-next-line
         .then((userCredential) => {
             e({});
